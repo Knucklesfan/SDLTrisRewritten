@@ -1,4 +1,4 @@
-OBJS	= main.o shader.o stbi_image.o texture.o
+OBJS	= main.o shader.o stbi_image.o texture.o utils.o skybox.o plane.o cube.o sprite.o buffermanager.o pixfont.o
 HEADER	= 
 OUT	= SDLTetris
 CC	 = g++
@@ -14,6 +14,20 @@ shader.o: src/shader.cpp
 	$(CC) $(FLAGS) src/shader.cpp 
 texture.o: src/texture.cpp
 	$(CC) $(FLAGS) src/texture.cpp 
+utils.o: src/utils.cpp
+	$(CC) $(FLAGS) src/utils.cpp 
+skybox.o: src/skybox.cpp
+	$(CC) $(FLAGS) src/skybox.cpp 
+plane.o: src/plane.cpp
+	$(CC) $(FLAGS) src/plane.cpp 
+cube.o: src/cube.cpp
+	$(CC) $(FLAGS) src/cube.cpp 
+sprite.o: src/sprite.cpp
+	$(CC) $(FLAGS) src/sprite.cpp 
+buffermanager.o: src/buffermanager.cpp
+	$(CC) $(FLAGS) src/buffermanager.cpp 
+pixfont.o: src/pixfont.cpp
+	$(CC) $(FLAGS) src/pixfont.cpp 
 
 stbi_image.o: src/stbi_image.c
 	$(CC) $(FLAGS) src/stbi_image.c 

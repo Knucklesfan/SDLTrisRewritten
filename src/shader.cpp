@@ -87,3 +87,8 @@ void shader::setVector(const std::string& name, float* value) const {
     glUniformMatrix4fv(location,1, GL_FALSE, value);
 
 }
+void shader::setVec2(const std::string& name, float* value) const {
+    int location = glGetUniformLocation(id, name.c_str());
+    glUniform2fv(location,1, value);
+
+}

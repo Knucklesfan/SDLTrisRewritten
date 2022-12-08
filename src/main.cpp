@@ -6,79 +6,24 @@
 #include <SDL2/SDL_opengl.h>
 #include <stdio.h>
 #include <string>
+#include "utils.h"
 #include "shader.h"
 #include "texture.h"
+#include "skybox.h"
+#include "plane.h"
+#include "cube.h"
+#include "sprite.h"
+#include "buffermanager.h"
+#include "pixfont.h"
+
 #include <iostream>
 #include <cmath>
 #include "stb_image.h"
 
-//Graphics program
-GLuint gProgramID = 0;
-GLint gVertexPos2DLocation = -1;
-GLuint gVBO = 0;
-GLuint gIBO = 0;
-float cube[] = {
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+int WINDOW_WIDTH = INTERNAL_WIDTH;
+int WINDOW_HEIGHT = INTERNAL_HEIGHT;
 
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
 
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
-
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
-     0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-     0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
-    -0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
-    -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
-};
-float backdrop[] = {
-	// positions          // colors           // texture coords
-	 1.0f,  1.0f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-	 1.0f, -1.0f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-	-1.0f, -1.0f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-	-1.0f,  1.0f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
-};
-
-float vertices[] = {
-	// positions          // colors           // texture coords
-	 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f, // top right
-	 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f, // bottom right
-	-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f, // bottom left
-	-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f  // top left 
-};
-unsigned int indices[] = {
-	0, 1, 3, // first triangle
-	1, 2, 3
-};
 
 int main(int argc, char* argv[])
 {
@@ -91,7 +36,7 @@ int main(int argc, char* argv[])
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	// Create an SDL window
-	SDL_Window*  window = SDL_CreateWindow("SDLTetris Rewritten", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+	SDL_Window*  window = SDL_CreateWindow("SDLTetris Rewritten", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
 
 	// if failed to create a window
 	if (!window)
@@ -133,91 +78,58 @@ int main(int argc, char* argv[])
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClearDepth(1.0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	glDepthFunc(GL_LESS);
 	glEnable(GL_DEPTH_TEST);  
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
 
 
-	unsigned int VBO, VAO, EBO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-	glBindVertexArray(VAO);
+	//below is all model stuff
+	buffermanager buffer = buffermanager(INTERNAL_WIDTH,INTERNAL_HEIGHT);
+	plane plan = plane(glm::vec3(0.0f,0.0f,-3.0f),glm::vec3(100.0f,100.0f,1.0f),glm::vec3((-85.0f), 0.0f, 0.0f));
+	skybox backdrop = skybox();
+	cube cub = cube(glm::vec3(3.0f,0.0f,-2.0f),glm::vec3(0.0f,0.0f,0.0f),
+	glm::vec3(1.0f,1.0f,1.0f),glm::vec3((-85.0f), 45.0f, 0.0f));
+	cube cub2 = cube(glm::vec3(3.0f,0.0f,-2.0f),glm::vec3(1.0f,0.0f,-0.0f),
+	glm::vec3(1.0f,1.0f,1.0f),glm::vec3((-85.0f), 45.0f, 0.0f));
+	cube cub3 = cube(glm::vec3(3.0f,0.0f,-2.0f),glm::vec3(-1.0f,0.0f,-0.0f),
+	glm::vec3(1.0f,1.0f,1.0f),glm::vec3((-85.0f), 45.0f, 0.0f));
+	cube cub4 = cube(glm::vec3(3.0f,0.0f,-2.0f),glm::vec3(0.0f,1.0f,-0.0f),
+	glm::vec3(1.0f,1.0f,1.0f),glm::vec3((-85.0f), 45.0f, 0.0f));
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	cube cub5 = cube(glm::vec3(-3.0f,0.0f,-2.0f),glm::vec3(0.0f,0.0f,0.0f),
+	glm::vec3(1.0f,1.0f,1.0f),glm::vec3((-85.0f), 45.0f, 0.0f));
+	cube cub6 = cube(glm::vec3(-3.0f,0.0f,-2.0f),glm::vec3(1.0f,0.0f,-0.0f),
+	glm::vec3(1.0f,1.0f,1.0f),glm::vec3((-85.0f), 45.0f, 0.0f));
+	cube cub7 = cube(glm::vec3(-3.0f,0.0f,-2.0f),glm::vec3(-1.0f,0.0f,-0.0f),
+	glm::vec3(1.0f,1.0f,1.0f),glm::vec3((-85.0f), 45.0f, 0.0f));
+	cube cub8 = cube(glm::vec3(-3.0f,0.0f,-2.0f),glm::vec3(-1.0f,1.0f,-0.0f),
+	glm::vec3(1.0f,1.0f,1.0f),glm::vec3((-85.0f), 45.0f, 0.0f));
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+	spriteRenderer renderer = spriteRenderer();
+	pixfont font = pixfont("8x8font");
+	utils::textures.push_back(texture("./textures/awesomeface.png"));
+	utils::textures.push_back(texture("./textures/grid.png"));
+	utils::textures.push_back(texture("./textures/block.png"));
+	utils::textures.push_back(texture("./textures/backdrop.png"));
+	utils::textures.push_back(texture("./textures/block2.png"));
 
-	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	// color attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-	// texture coord attribute
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-
-	unsigned int bVBO, bVAO, bEBO;
-	glGenVertexArrays(1, &bVAO);
-	glGenBuffers(1, &bVBO);
-	glGenBuffers(1, &bEBO);
-	glBindVertexArray(bVAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, bVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(backdrop), backdrop, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, bEBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	// color attribute
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-	// texture coord attribute
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-
-	unsigned int cVAO, cVBO, cEBO;
-
-	glGenVertexArrays(1, &cVAO);
-	glGenBuffers(1, &cVBO);
-	glGenBuffers(1, &cEBO);
-	glBindVertexArray(cVAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, cVBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(cube), cube, GL_STATIC_DRAW);
-
-
-	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	// texture coord attribute
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-
-	//TODO: MAKE A SHADER CLASS!!!!! Done!!!
-
-	texture awesome = texture("guy.png");
-	texture container = texture("guy.png");
-	texture grid = texture("grid.png");
-	texture bg = texture("backdrop.png");
-
-	shader orange = shader("./shaders/vertex_unlit.shader", "./shaders/fragment_unlit.shader");
-	shader rainbow = shader("./shaders/vertex_rainbow.shader", "./shaders/fragment_rainbow.shader");
-	shader backdrop = shader("./shaders/vert.shader","./shaders/frag.shader");
 	
+	utils::shaders.push_back(shader("./shaders/vertex_unlit.shader", "./shaders/fragment_unlit.shader"));
+	utils::shaders.push_back(shader("./shaders/vertex_rainbow.shader", "./shaders/fragment_rainbow.shader"));
+	utils::shaders.push_back(shader("./shaders/vertex_background.shader","./shaders/fragment_background.shader"));
+	utils::shaders.push_back(shader("./shaders/vertex_aspect.shader","./shaders/fragment_aspect.shader"));
+	utils::shaders.push_back(shader("./shaders/vertex_sprite.shader","./shaders/fragment_sprite.shader"));
+
 	
 	SDL_Event event;	 // used to store any events from the OS
 
 	float posX=0.0f;
 	while (running)
 	{
+
 		// poll for events from SDL
 		while (SDL_PollEvent(&event))
 		{
@@ -229,8 +141,10 @@ int main(int argc, char* argv[])
 				switch (event.key.keysym.sym)
 				{
 					case SDLK_w:
+						glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
 						break;
 					case SDLK_s:
+						glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 						break;
 					case SDLK_a:
 						break;
@@ -239,57 +153,60 @@ int main(int argc, char* argv[])
 
 				}
 			}
+			if(event.type == SDL_WINDOWEVENT) {
+				if (event.window.event == SDL_WINDOWEVENT_RESIZED) {
+
+					WINDOW_WIDTH =(event.window.data1);
+					WINDOW_HEIGHT = (event.window.data2);
+        		}
+			}
 		}
 		posX+=0.0005;
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
-		glDepthMask(GL_FALSE);
-		bg.activate(0);
-		backdrop.activate();
-		backdrop.setInt("texture1",0);
-
-		glBindVertexArray(bVAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-		glDepthMask(GL_TRUE);
-
-		float timeValue = SDL_GetTicks();
-		float greenValue = sin(timeValue) / 2.0f + 0.5f;
+		buffer.enable();
 		glm::mat4 projection;
-		projection = glm::perspective(glm::radians(45.0f), 640.0f / 480.0f, 0.001f, 10000.0f);
-		container.activate(0);
-		awesome.activate(1);
-
-		rainbow.activate();
-		rainbow.setInt("texture1",0);
-		rainbow.setInt("texture2", 1);
-		glm::mat4 trans = glm::mat4(1.0f); //the actual transform of the model itself
-		trans = glm::rotate(trans, (float)SDL_GetTicks()/1000 * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));  
-		
+		projection = glm::perspective(glm::radians(45.0f), (float)INTERNAL_WIDTH / (float)INTERNAL_HEIGHT, 0.001f, 10000.0f);
 		glm::mat4 view = glm::mat4(1.0f); //view is the **Camera**'s perspective
-		view = glm::translate(view, glm::vec3(0.0, 0, -3.0)); 
-		rainbow.setVector("model", glm::value_ptr(trans));
-		rainbow.setVector("projection", glm::value_ptr(projection));
-		rainbow.setVector("view", glm::value_ptr(view));
-		glBindVertexArray(cVAO);
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+		view = glm::translate(view, glm::vec3(0.0, 0, -6.0)); 
 
-		grid.activate(0);
-		orange.activate();
-		orange.setInt("texture1",0);
-
-		trans = glm::mat4(1.0f); //the actual transform of the model itself
-		trans = glm::rotate(trans, glm::radians(-85.0f), glm::vec3(1.0f, 0.0f, 0.0f));  
-		trans = glm::scale(trans, glm::vec3(200.0f,200.0f,1.0f));
-		trans = glm::translate(trans,glm::vec3(0.0f,fmod(posX,0.5f),-3.0f));
-		orange.setVector("model", glm::value_ptr(trans));
-		orange.setVector("projection", glm::value_ptr(projection));
-		orange.setVector("view", glm::value_ptr(view));
-		glBindVertexArray(VAO);
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		backdrop.render(utils::shaders[2],utils::textures[3]);
 
 
+		plan.position[0] = fmod(posX,0.5f);
+		plan.render(utils::shaders[0],utils::textures[1],projection,view);
+		cub.rotation[0] = ((float)SDL_GetTicks()/10 * glm::radians(50.0f))/2;
+		cub.rotation[1] = (float)SDL_GetTicks()/10 * glm::radians(50.0f);
+		cub.render(utils::shaders[1],utils::textures[2],projection,view);
+		cub2.rotation[0] = ((float)SDL_GetTicks()/10 * glm::radians(50.0f))/2;
+		cub2.rotation[1] = (float)SDL_GetTicks()/10 * glm::radians(50.0f);
+		cub2.render(utils::shaders[1],utils::textures[2],projection,view);
+		cub3.rotation[0] = ((float)SDL_GetTicks()/10 * glm::radians(50.0f))/2;
+		cub3.rotation[1] = (float)SDL_GetTicks()/10 * glm::radians(50.0f);
+		cub3.render(utils::shaders[1],utils::textures[2],projection,view);
+		cub4.rotation[0] = ((float)SDL_GetTicks()/10 * glm::radians(50.0f))/2;
+		cub4.rotation[1] = (float)SDL_GetTicks()/10 * glm::radians(50.0f);
+		cub4.render(utils::shaders[1],utils::textures[2],projection,view);
+
+		cub5.rotation[0] = ((float)SDL_GetTicks()/10 * -glm::radians(40.0f))/2;
+		cub5.rotation[1] = (float)SDL_GetTicks()/10 * -glm::radians(40.0f);
+		cub5.render(utils::shaders[1],utils::textures[4],projection,view);
+		cub6.rotation[0] = ((float)SDL_GetTicks()/10 * -glm::radians(40.0f))/2;
+		cub6.rotation[1] = (float)SDL_GetTicks()/10 * -glm::radians(40.0f);
+		cub6.render(utils::shaders[1],utils::textures[4],projection,view);
+		cub7.rotation[0] = ((float)SDL_GetTicks()/10 * -glm::radians(40.0f))/2;
+		cub7.rotation[1] = (float)SDL_GetTicks()/10 * -glm::radians(40.0f);
+		cub7.render(utils::shaders[1],utils::textures[4],projection,view);
+		cub8.rotation[0] = ((float)SDL_GetTicks()/10 * -glm::radians(40.0f))/2;
+		cub8.rotation[1] = (float)SDL_GetTicks()/10 * -glm::radians(40.0f);
+		cub8.render(utils::shaders[1],utils::textures[4],projection,view);
 
 
+		font.render(&renderer,utils::shaders[4],"Knuxfan's Tetriminos",320,200,true,255,255,255,0,false,(SDL_GetTicks()/(double)1000.0),5,5,1.0);
+		font.render(&renderer,utils::shaders[4],"2",320,216,true,255,255,255,0,false,(SDL_GetTicks()/(double)1000.0),5,5,1.0);
+		font.render(&renderer,utils::shaders[4],"Now with new OpenGL Renderer!",320,248,true,255,255,255,0,true,(SDL_GetTicks()/(double)1000.0),5,5,1.0);
+
+		buffer.disable(WINDOW_WIDTH,WINDOW_HEIGHT);
+		buffer.render(utils::shaders[3],WINDOW_WIDTH,WINDOW_HEIGHT);
 		// Swap OpenGL buffers
 		SDL_GL_SwapWindow(window);
 	}
@@ -305,4 +222,7 @@ int main(int argc, char* argv[])
 	SDL_Quit();
 
 	return 0;
+}
+void renderObjects() {
+
 }
