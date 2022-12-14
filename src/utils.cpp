@@ -1,8 +1,29 @@
 #include "utils.h"
 #include <SDL2/SDL.h>
 
-//std::vector<texture> utils::textures = std::vector<texture>();
-//std::vector<shader> utils::shaders = std::vector<shader>();
+std::vector<texture*> graphics::textures = std::vector<texture*>();
+std::vector<shader*> graphics::shaders = std::vector<shader*>();
+std::map<std::string, actiontype> bgconverters::actionmap =
+    {
+        {"move", actiontype::MOVE},
+        {"scale", actiontype::SCALE},
+        {"rotate", actiontype::ROTATE}
+    };    
+std::map<std::string, layertype> bgconverters::layermap  = {
+        {"background", layertype::BACKGROUND}, //
+        {"legacy", layertype::LEGACY}, 
+        {"bg3d", layertype::BG3D},
+        {"bg2d", layertype::BG2D}
+};;
+std::map<std::string, headerdata> bgconverters::headermap =
+{
+    {"title", headerdata::TITLE},
+    {"version", headerdata::VERSION},
+    {"music", headerdata::MUSIC},
+    {"filename", headerdata::FILENAME},
+    {"creator", headerdata::CREATOR}
+
+};
 
 std::string utils::loadFile(std::string filename) {
         std::ifstream inFile;
@@ -42,4 +63,11 @@ int utils::getMouseY() {
 int utils::mouseCheck(int keycode) {
     Uint32 buttons = SDL_GetMouseState(NULL, NULL);
     return (buttons & keycode) != 0;
+}
+
+bool checkNode(rapidxml::xml_node<char>* node) {
+    if(node == nullptr) {
+        std::cout << "Failed to parse node\n";
+    }
+    return node != nullptr;
 }

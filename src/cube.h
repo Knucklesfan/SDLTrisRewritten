@@ -1,3 +1,5 @@
+#pragma once
+
 //Not truly a skybox, because that wouldn't really be needed for this project, but rather a sky image!
 //Skyboxes could be implemented here, though....
 #include "shader.h"
@@ -12,7 +14,7 @@
 class cube {
     public:
         cube(glm::vec3 prepos,glm::vec3 postpos, glm::vec3 scale, glm::vec3 rotation);
-        void render(shader shad, texture t, glm::mat4 projection, glm::mat4 view);
+        void render(shader* shad, texture* t, glm::mat4 projection, glm::mat4 view);
         glm::vec3 position;
         glm::vec3 postposition;
         glm::vec3 scale;

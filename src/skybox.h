@@ -1,3 +1,4 @@
+#pragma once
 //Not truly a skybox, because that wouldn't really be needed for this project, but rather a sky image!
 //Skyboxes could be implemented here, though....
 #include "shader.h"
@@ -12,7 +13,7 @@
 class skybox {
     public:
         skybox();
-        void render(shader, texture);
+        void render(shader*, texture*);
     private:
         unsigned int VBO, VAO, EBO;
         float vertices[20] = {

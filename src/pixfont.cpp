@@ -75,13 +75,13 @@ pixfont::pixfont(std::string path) {
     
     doc.clear();
 }
-void pixfont::render(spriteRenderer* renderer,shader shad,int x, int y, std::string words, bool center, int red, int blue, int green, int wordwrap, bool sine, double pos, double multiplyin, double multiplyout) {
+void pixfont::render(spriteRenderer* renderer,shader* shad,int x, int y, std::string words, bool center, int red, int blue, int green, int wordwrap, bool sine, double pos, double multiplyin, double multiplyout) {
 render(renderer,shad,words, x, y, center, red, blue, green, wordwrap, sine, pos, multiplyin, multiplyout, 1);
 }
-void pixfont::render(spriteRenderer* renderer,shader shad,int x, int y, std::string strg, bool center) {
+void pixfont::render(spriteRenderer* renderer,shader* shad,int x, int y, std::string strg, bool center) {
 render(renderer,shad,strg, x, y, center, 0, 0, 0, 0, false, 0, 0, 0, 1);
 }
-void pixfont::render(spriteRenderer* renderer,shader shad,std::string words, int x, int y, bool center, int red, int blue, int green, int wordwrap, bool sine, double pos, double multiplyin, double multiplyout, double scale) {
+void pixfont::render(spriteRenderer* renderer,shader* shad,std::string words, int x, int y, bool center, int red, int blue, int green, int wordwrap, bool sine, double pos, double multiplyin, double multiplyout, double scale) {
 
     int finalwidth = 0;
     int drawcolor = 0;
@@ -110,7 +110,7 @@ void pixfont::render(spriteRenderer* renderer,shader shad,std::string words, int
             if (sine) {
                 tmpy = (y + (sin((pos + i) * multiplyin) * multiplyout));
             }
-            renderer->render(shad, txt,
+            renderer->render(shad, &txt,
             glm::vec2(tmpx,tmpy), //position to draw at
             glm::vec2(mapping.at(a).width, height), //width and height to draw
             0, //rotation

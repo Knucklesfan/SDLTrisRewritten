@@ -64,10 +64,10 @@ void buffermanager::disable(int WINDOW_WIDTH, int WINDOW_HEIGHT) {
 		glViewport(0,0,WINDOW_WIDTH,WINDOW_HEIGHT); //Restore old frame buffer, we're done here.
 		glMatrixMode(GL_PROJECTION);
 }
-void buffermanager::render(shader shad,int WINDOW_WIDTH, int WINDOW_HEIGHT) {
+void buffermanager::render(shader* shad,int WINDOW_WIDTH, int WINDOW_HEIGHT) {
     glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, renderTexture);
-    shad.activate();
+    shad->activate();
     glm::mat4 bgmtrans = glm::mat4(1.0f); //the actual transform of the model itself
     float currentaspect = (float)WINDOW_WIDTH/(float)WINDOW_HEIGHT;
     float intendedaspect = (float)width/(float)height;
@@ -81,8 +81,8 @@ void buffermanager::render(shader shad,int WINDOW_WIDTH, int WINDOW_HEIGHT) {
     }
     bgmtrans = glm::scale(bgmtrans, glm::vec3(outputwidth/WINDOW_WIDTH,outputheight/WINDOW_HEIGHT,1.0f));
 
-    shad.setInt("texture1",0);
-    shad.setVector("model",glm::value_ptr(bgmtrans));
+    shad->setInt("texture1",0);
+    shad->setVector("model",glm::value_ptr(bgmtrans));
     glBindVertexArray(VAO);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 

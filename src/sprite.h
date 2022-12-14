@@ -13,10 +13,20 @@
 class spriteRenderer {
     public:
         spriteRenderer();
-        void render(shader shad, texture t, glm::vec2 position, glm::vec2 size,
+        void render(shader* shad, texture* t, glm::vec2 position, glm::vec2 size,
 float rotate, glm::vec2 texcoord, glm::vec2 texsize);
     private:
         unsigned int quadVAO;
+        float vertices[24] = { 
+            // pos      // tex
+            0.0f, 1.0f, 0.0f, 1.0f,
+            1.0f, 0.0f, 1.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 0.0f, 
+
+            0.0f, 1.0f, 0.0f, 1.0f,
+            1.0f, 1.0f, 1.0f, 1.0f,
+            1.0f, 0.0f, 1.0f, 0.0f
+        };
 
 
 };

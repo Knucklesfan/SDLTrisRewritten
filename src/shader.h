@@ -17,6 +17,7 @@ public:
 	void setFloat(const std::string& name, float value) const;
 	void setVector(const std::string& name, float* value) const;
 	void setVec2(const std::string& name, float* value) const;
+	void setVec4(const std::string& name, float* value) const;
 
 };
 

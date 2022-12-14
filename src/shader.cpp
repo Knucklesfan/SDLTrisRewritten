@@ -14,7 +14,7 @@ shader::shader(std::string vertPath, std::string fragpath)
     //compile shaders
     std::string vertStr = utils::loadFile(vertPath);
     const char* vertex = vertStr.c_str();
-    std::cout << vertStr << "\n";
+    //std::cout << vertStr << "\n";
     id = glCreateProgram();
 
     GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -30,7 +30,7 @@ shader::shader(std::string vertPath, std::string fragpath)
     //fragment
     std::string fragStr = utils::loadFile(fragpath);
     const char* fragment = fragStr.c_str();
-    std::cout << fragment << "\n";
+    //std::cout << fragment << "\n";
     GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
     glShaderSource(fragmentShader, 1, &fragment, NULL);
     glCompileShader(fragmentShader);
@@ -90,5 +90,10 @@ void shader::setVector(const std::string& name, float* value) const {
 void shader::setVec2(const std::string& name, float* value) const {
     int location = glGetUniformLocation(id, name.c_str());
     glUniform2fv(location,1, value);
+
+}
+void shader::setVec4(const std::string& name, float* value) const {
+    int location = glGetUniformLocation(id, name.c_str());
+    glUniform4fv(location,1, value);
 
 }

@@ -24,11 +24,12 @@ cube::cube(glm::vec3 prepos, glm::vec3 postpos, glm::vec3 scale, glm::vec3 rotat
 
 }
 
-void cube::render(shader shad, texture t, glm::mat4 projection, glm::mat4 view) {
-		t.activate(0);
+void cube::render(shader* shad, texture* t, glm::mat4 projection, glm::mat4 view) {
+		
+		t->activate(0);
 
-		shad.activate();
-		shad.setInt("texture1",0);
+		shad->activate();
+		shad->setInt("texture1",0);
         transform = glm::mat4(1.0f); //the actual transform of the model itself
 		transform = glm::translate(transform,position);
         transform = glm::rotate(transform, glm::radians(rotation[0]), glm::vec3(1.0f, 0.0f, 0.0f));  
@@ -37,9 +38,9 @@ void cube::render(shader shad, texture t, glm::mat4 projection, glm::mat4 view) 
         transform = glm::scale(transform, scale);
 		transform = glm::translate(transform,postposition);
 
-		shad.setVector("model", glm::value_ptr(transform));
-		shad.setVector("projection", glm::value_ptr(projection));
-		shad.setVector("view", glm::value_ptr(view));
+		shad->setVector("model", glm::value_ptr(transform));
+		shad->setVector("projection", glm::value_ptr(projection));
+		shad->setVector("view", glm::value_ptr(view));
 		glBindVertexArray(VAO);
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 

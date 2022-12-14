@@ -20,11 +20,11 @@ skybox::skybox() {
 	glEnableVertexAttribArray(2);
 
 }
-void skybox::render(shader renderShade, texture renderTexture) {
+void skybox::render(shader* renderShade, texture* renderTexture) {
 	glDepthMask(GL_FALSE);
-	renderTexture.activate(0);
-	renderShade.activate();
-	renderShade.setInt("texture1",0);
+	renderTexture->activate(0);
+	renderShade->activate();
+	renderShade->setInt("texture1",0);
 
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

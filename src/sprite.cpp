@@ -3,38 +3,8 @@
 #include <glm/gtx/string_cast.hpp>
 
 spriteRenderer::spriteRenderer() {
-        //generates the VBO and stuff
-		/*
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-	glBindVertexArray(VAO);
-
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	// texture coord attribute
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-	glEnableVertexAttribArray(2);
-*/
-    // configure VAO/VBO
+    //generates the VBO and stuff
     unsigned int VBO;
-    float vertices[] = { 
-        // pos      // tex
-        0.0f, 1.0f, 0.0f, 1.0f,
-        1.0f, 0.0f, 1.0f, 0.0f,
-        0.0f, 0.0f, 0.0f, 0.0f, 
-
-        0.0f, 1.0f, 0.0f, 1.0f,
-        1.0f, 1.0f, 1.0f, 1.0f,
-        1.0f, 0.0f, 1.0f, 0.0f
-    };
 
     glGenVertexArrays(1, &this->quadVAO);
     glGenBuffers(1, &VBO);
@@ -50,7 +20,7 @@ spriteRenderer::spriteRenderer() {
 
 }
 
-void spriteRenderer::render(shader shad, texture t, glm::vec2 position, glm::vec2 size,
+void spriteRenderer::render(shader* shad, texture* t, glm::vec2 position, glm::vec2 size,
 float rotate, glm::vec2 texcoord, glm::vec2 texsize) {
 	/*
     glm::mat4 model = glm::mat4(1.0f);
@@ -69,11 +39,11 @@ float rotate, glm::vec2 texcoord, glm::vec2 texsize) {
     // prepare transformations
 	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(INTERNAL_WIDTH), 
     static_cast<float>(INTERNAL_HEIGHT), 0.0f, -1.0f, 1.0f);
-	glm::vec2 texOffset = glm::vec2(texcoord[0]/t.w,texcoord[1]/t.h);
-	glm::vec2 texScale = glm::vec2(texsize[0]/t.w,texsize[1]/t.h);
+	glm::vec2 texOffset = glm::vec2(texcoord[0]/t->w,texcoord[1]/t->h);
+	glm::vec2 texScale = glm::vec2(texsize[0]/t->w,texsize[1]/t->h);
 
-    shad.activate();
-	shad.setVector("projection",glm::value_ptr(projection));
+    shad->activate();
+	shad->setVector("projection",glm::value_ptr(projection));
     glm::mat4 model = glm::mat4(1.0f);
     model = glm::translate(model, glm::vec3(position, 0.0f));  // first translate (transformations are: scale happens first, then rotation, and then final translation happens; reversed order)
 
@@ -83,10 +53,10 @@ float rotate, glm::vec2 texcoord, glm::vec2 texsize) {
 
     model = glm::scale(model, glm::vec3(size, 1.0f)); // last scale
 
-    shad.setVector("model", glm::value_ptr(model));
-	shad.setVec2("texOffset",glm::value_ptr(texOffset));
-	shad.setVec2("scale",glm::value_ptr(texScale));
-	t.activate(0);
+    shad->setVector("model", glm::value_ptr(model));
+	shad->setVec2("texOffset",glm::value_ptr(texOffset));
+	shad->setVec2("scale",glm::value_ptr(texScale));
+	t->activate(0);
     glBindVertexArray(this->quadVAO);
     glDrawArrays(GL_TRIANGLES, 0, 6);
     glBindVertexArray(0);

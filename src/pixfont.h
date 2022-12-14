@@ -65,10 +65,10 @@ class pixfont : public Font
         std::string name;
         std::string path;
         std::map<char, letter> mapping;
-        void render(spriteRenderer* render,shader shad,std::string words, int x, int y, bool center, int red, int blue, int green, int wordwrap, bool sine, double pos, double multiplyin, double multiplyout, double scale);
-        void render(spriteRenderer* render,shader shad,int x, int y,std::string words, bool center, int red, int blue, int green, int wordwrap, bool sine, double pos, double multiplyin, double multiplyout);
+        void render(spriteRenderer* render,shader* shad,std::string words, int x, int y, bool center, int red, int blue, int green, int wordwrap, bool sine, double pos, double multiplyin, double multiplyout, double scale);
+        void render(spriteRenderer* render,shader* shad,int x, int y,std::string words, bool center, int red, int blue, int green, int wordwrap, bool sine, double pos, double multiplyin, double multiplyout);
 
-        void render(spriteRenderer* render,shader shad,int x, int y, std::string strg, bool center);
+        void render(spriteRenderer* render,shader* shad,int x, int y, std::string strg, bool center);
         texture txt;
         pixfont(std::string path);
         pixfont();

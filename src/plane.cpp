@@ -25,7 +25,7 @@ plane::plane(glm::vec3 pos, glm::vec3 scale, glm::vec3 rotation) {
     this->scale = scale;
 }
 
-void plane::render(shader shad, texture t, glm::mat4 projection, glm::mat4 view) {
+void plane::render(shader* shad, texture* t, glm::mat4 projection, glm::mat4 view) {
 
     transform = glm::mat4(1.0f); //the actual transform of the model itself
 
@@ -35,13 +35,13 @@ void plane::render(shader shad, texture t, glm::mat4 projection, glm::mat4 view)
 	transform = glm::scale(transform, scale);
 	transform = glm::translate(transform,position);
 
-    t.activate(0);
-	shad.activate();
-	shad.setInt("texture1",0);
+    t->activate(0);
+	shad->activate();
+	shad->setInt("texture1",0);
 
-    shad.setVector("model", glm::value_ptr(transform));
-    shad.setVector("projection", glm::value_ptr(projection));
-	shad.setVector("view", glm::value_ptr(view));
+    shad->setVector("model", glm::value_ptr(transform));
+    shad->setVector("projection", glm::value_ptr(projection));
+	shad->setVector("view", glm::value_ptr(view));
 
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

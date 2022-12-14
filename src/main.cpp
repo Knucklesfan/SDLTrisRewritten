@@ -4,6 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 #include <SDL2/SDL_opengl.h>
+#include <SDL2/SDL_mixer.h>
 #include <stdio.h>
 #include <string>
 #include "utils.h"
@@ -15,6 +16,7 @@
 #include "sprite.h"
 #include "buffermanager.h"
 #include "pixfont.h"
+#include "background.h"
 
 #include <iostream>
 #include <cmath>
@@ -28,7 +30,7 @@ int WINDOW_HEIGHT = INTERNAL_HEIGHT;
 int main(int argc, char* argv[])
 {
 	// Initialize SDL with video
-	SDL_Init(SDL_INIT_VIDEO);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO);
 
 
 	//Use OpenGL 3.1 core
@@ -70,6 +72,12 @@ int main(int argc, char* argv[])
 		printf("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
 	}
 
+    if( Mix_OpenAudio( 44100, MIX_DEFAULT_FORMAT, 2, 2048 ) < 0 )
+    {
+	    printf( "SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError() );
+    }
+	//Mix_Music* mus = Mix_LoadMUS("./cannery.mp3");
+	//Mix_PlayMusic(mus,1);
 	glMatrixMode(GL_PROJECTION);
 
 	glLoadIdentity();
@@ -85,6 +93,18 @@ int main(int argc, char* argv[])
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
 
+	graphics::textures.push_back(new texture("./textures/awesomeface.png"));
+	graphics::textures.push_back(new texture("./textures/grid.png"));
+	graphics::textures.push_back(new texture("./textures/block.png"));
+	graphics::textures.push_back(new texture("./textures/backdrop.png"));
+	graphics::textures.push_back(new texture("./textures/block2.png"));
+
+	
+	graphics::shaders.push_back(new shader("./shaders/vertex_unlit.shader", "./shaders/fragment_unlit.shader"));
+	graphics::shaders.push_back(new shader("./shaders/vertex_rainbow.shader", "./shaders/fragment_rainbow.shader"));
+	graphics::shaders.push_back(new shader("./shaders/vertex_background.shader","./shaders/fragment_background.shader"));
+	graphics::shaders.push_back(new shader("./shaders/vertex_aspect.shader","./shaders/fragment_aspect.shader"));
+	graphics::shaders.push_back(new shader("./shaders/vertex_sprite.shader","./shaders/fragment_sprite.shader"));
 
 	//below is all model stuff
 	buffermanager buffer = buffermanager(INTERNAL_WIDTH,INTERNAL_HEIGHT);
@@ -110,23 +130,15 @@ int main(int argc, char* argv[])
 
 	spriteRenderer renderer = spriteRenderer();
 	pixfont font = pixfont("8x8font");
-	utils::textures.push_back(texture("./textures/awesomeface.png"));
-	utils::textures.push_back(texture("./textures/grid.png"));
-	utils::textures.push_back(texture("./textures/block.png"));
-	utils::textures.push_back(texture("./textures/backdrop.png"));
-	utils::textures.push_back(texture("./textures/block2.png"));
-
-	
-	utils::shaders.push_back(shader("./shaders/vertex_unlit.shader", "./shaders/fragment_unlit.shader"));
-	utils::shaders.push_back(shader("./shaders/vertex_rainbow.shader", "./shaders/fragment_rainbow.shader"));
-	utils::shaders.push_back(shader("./shaders/vertex_background.shader","./shaders/fragment_background.shader"));
-	utils::shaders.push_back(shader("./shaders/vertex_aspect.shader","./shaders/fragment_aspect.shader"));
-	utils::shaders.push_back(shader("./shaders/vertex_sprite.shader","./shaders/fragment_sprite.shader"));
-
+	bg backg = bg("beachgrid",false);
 	
 	SDL_Event event;	 // used to store any events from the OS
-
+	float fade = 0.0f;
 	float posX=0.0f;
+	Uint64 NOW = SDL_GetPerformanceCounter();
+	Uint64 LAST = 0;
+	double deltaTime = 0;
+
 	while (running)
 	{
 
@@ -147,8 +159,10 @@ int main(int argc, char* argv[])
 						glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 						break;
 					case SDLK_a:
+						fade++;
 						break;
 					case SDLK_d:
+						fade--;
 						break;
 
 				}
@@ -161,7 +175,13 @@ int main(int argc, char* argv[])
         		}
 			}
 		}
-		posX+=0.0005;
+		LAST = NOW;
+		NOW = SDL_GetPerformanceCounter();
+
+		deltaTime = (double)((NOW - LAST)*1000 / (double)SDL_GetPerformanceFrequency() );
+
+		posX+=deltaTime/0.0005;
+
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		buffer.enable();
 		glm::mat4 projection;
@@ -169,44 +189,47 @@ int main(int argc, char* argv[])
 		glm::mat4 view = glm::mat4(1.0f); //view is the **Camera**'s perspective
 		view = glm::translate(view, glm::vec3(0.0, 0, -6.0)); 
 
-		backdrop.render(utils::shaders[2],utils::textures[3]);
+		//backdrop.render(utils::shaders[2],utils::textures[3]);
+		// utils::shaders[1].activate();
+		// utils::shaders[1].setFloat("fade",fade);
+		// plan.position[0] = fmod(posX,0.5f);
+		//plan.render(utils::shaders[0],utils::textures[1],projection,view);
+		backg.logic(deltaTime);
+		backg.render(graphics::shaders[2]);
 
-
-		plan.position[0] = fmod(posX,0.5f);
-		plan.render(utils::shaders[0],utils::textures[1],projection,view);
 		cub.rotation[0] = ((float)SDL_GetTicks()/10 * glm::radians(50.0f))/2;
 		cub.rotation[1] = (float)SDL_GetTicks()/10 * glm::radians(50.0f);
-		cub.render(utils::shaders[1],utils::textures[2],projection,view);
+		cub.render(graphics::shaders[1],graphics::textures[2],projection,view);
 		cub2.rotation[0] = ((float)SDL_GetTicks()/10 * glm::radians(50.0f))/2;
 		cub2.rotation[1] = (float)SDL_GetTicks()/10 * glm::radians(50.0f);
-		cub2.render(utils::shaders[1],utils::textures[2],projection,view);
+		cub2.render(graphics::shaders[1],graphics::textures[2],projection,view);
 		cub3.rotation[0] = ((float)SDL_GetTicks()/10 * glm::radians(50.0f))/2;
 		cub3.rotation[1] = (float)SDL_GetTicks()/10 * glm::radians(50.0f);
-		cub3.render(utils::shaders[1],utils::textures[2],projection,view);
+		cub3.render(graphics::shaders[1],graphics::textures[2],projection,view);
 		cub4.rotation[0] = ((float)SDL_GetTicks()/10 * glm::radians(50.0f))/2;
 		cub4.rotation[1] = (float)SDL_GetTicks()/10 * glm::radians(50.0f);
-		cub4.render(utils::shaders[1],utils::textures[2],projection,view);
+		cub4.render(graphics::shaders[1],graphics::textures[2],projection,view);
 
 		cub5.rotation[0] = ((float)SDL_GetTicks()/10 * -glm::radians(40.0f))/2;
 		cub5.rotation[1] = (float)SDL_GetTicks()/10 * -glm::radians(40.0f);
-		cub5.render(utils::shaders[1],utils::textures[4],projection,view);
+		cub5.render(graphics::shaders[1], graphics::textures[4],projection,view);
 		cub6.rotation[0] = ((float)SDL_GetTicks()/10 * -glm::radians(40.0f))/2;
 		cub6.rotation[1] = (float)SDL_GetTicks()/10 * -glm::radians(40.0f);
-		cub6.render(utils::shaders[1],utils::textures[4],projection,view);
+		cub6.render(graphics::shaders[1], graphics::textures[4],projection,view);
 		cub7.rotation[0] = ((float)SDL_GetTicks()/10 * -glm::radians(40.0f))/2;
 		cub7.rotation[1] = (float)SDL_GetTicks()/10 * -glm::radians(40.0f);
-		cub7.render(utils::shaders[1],utils::textures[4],projection,view);
+		cub7.render(graphics::shaders[1], graphics::textures[4],projection,view);
 		cub8.rotation[0] = ((float)SDL_GetTicks()/10 * -glm::radians(40.0f))/2;
 		cub8.rotation[1] = (float)SDL_GetTicks()/10 * -glm::radians(40.0f);
-		cub8.render(utils::shaders[1],utils::textures[4],projection,view);
+		cub8.render(graphics::shaders[1],graphics::textures[4],projection,view);
 
 
-		font.render(&renderer,utils::shaders[4],"Knuxfan's Tetriminos",320,200,true,255,255,255,0,false,(SDL_GetTicks()/(double)1000.0),5,5,1.0);
-		font.render(&renderer,utils::shaders[4],"2",320,216,true,255,255,255,0,false,(SDL_GetTicks()/(double)1000.0),5,5,1.0);
-		font.render(&renderer,utils::shaders[4],"Now with new OpenGL Renderer!",320,248,true,255,255,255,0,true,(SDL_GetTicks()/(double)1000.0),5,5,1.0);
+		font.render(&renderer,graphics::shaders[4],"Knuxfan's Tetriminos",320,200,true,255,255,255,0,false,(SDL_GetTicks()/(double)1000.0),5,5,1.0);
+		font.render(&renderer,graphics::shaders[4],"2",320,216,true,255,255,255,0,false,(SDL_GetTicks()/(double)1000.0),5,5,1.0);
+		font.render(&renderer,graphics::shaders[4],"Now with new OpenGL Renderer!",320,248,true,255,255,255,0,true,(SDL_GetTicks()/(double)1000.0),5,5,1.0);
 
 		buffer.disable(WINDOW_WIDTH,WINDOW_HEIGHT);
-		buffer.render(utils::shaders[3],WINDOW_WIDTH,WINDOW_HEIGHT);
+		buffer.render(graphics::shaders[3],WINDOW_WIDTH,WINDOW_HEIGHT);
 		// Swap OpenGL buffers
 		SDL_GL_SwapWindow(window);
 	}

@@ -13,7 +13,7 @@ class buffermanager {
     buffermanager(int width, int height);
     void enable();
     void disable(int WINDOW_WIDTH, int WINDOW_HEIGHT);
-    void render(shader shad,int WINDOW_WIDTH, int WINDOW_HEIGHT);
+    void render(shader* shad,int WINDOW_WIDTH, int WINDOW_HEIGHT);
     const int width;
     const int height;
     private:
