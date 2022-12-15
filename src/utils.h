@@ -9,6 +9,8 @@
 #include <vector>
 #include "shader.h"
 #include "texture.h"
+#include "background.h"
+#include "font.h"
 #include <map>
 #include <rapidxml.hpp>
 #define INTERNAL_WIDTH 640
@@ -35,7 +37,13 @@ class graphics {
     public:
         static std::vector<shader*> shaders;
         static std::vector<texture*> textures;
+        static std::vector<bg*> backgrounds;
+        static std::vector<Font*> fonts;
 
+        static int generateshaders();
+        static int generatetextures();
+        static int generatefonts();
+        static int generatebgs();
 };
 enum actiontype {
     MOVE,

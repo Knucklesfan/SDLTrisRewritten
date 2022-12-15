@@ -96,7 +96,7 @@ void legacylayer::render() {
     graphics::shaders[4]->activate();
 	graphics::shaders[4]->setVector("projection",glm::value_ptr(projection));
     glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(position, 0.0f));  // first translate (transformations are: scale happens first, then rotation, and then final translation happens; reversed order)
+    model = glm::translate(model, glm::vec3(position.x-t.w,position.y-t.h, 0.0f));  // first translate (transformations are: scale happens first, then rotation, and then final translation happens; reversed order)
 
     model = glm::translate(model, glm::vec3(0.5f * t.w, 0.5f * t.h, 0.0f)); // move origin of rotation to center of quad
     model = glm::rotate(model, glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f)); // then rotate
@@ -167,7 +167,6 @@ bg::bg(std::string path, bool folder) {
                             if (!music) {
                                 printf("Failed to load music at %s: %s\n", musicpath.c_str(), SDL_GetError());
                             }
-                            Mix_PlayMusic(music,100);
                             break;
                         }
                         default: {

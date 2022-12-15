@@ -14,5 +14,5 @@ void main()
 
     float scanline = floor((TexCoords.y*(texinfo.y))/sineinfo.z)*sineinfo.z;
     float sinex = (sin((sineinfo.w+scanline)*sineinfo.y/2)*sineinfo.x/texinfo.x);
-    color = texture(image, vec2(TexCoords.x+sinex, -TexCoords.y));
+    color = texture(image, vec2(TexCoords.x+0, -TexCoords.y));
 }  

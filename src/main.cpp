@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
 
 	graphics::textures.push_back(new texture("./textures/awesomeface.png"));
-	graphics::textures.push_back(new texture("./textures/grid.png"));
+	graphics::textures.push_back(new texture("./textures/water.png"));
 	graphics::textures.push_back(new texture("./textures/block.png"));
 	graphics::textures.push_back(new texture("./textures/backdrop.png"));
 	graphics::textures.push_back(new texture("./textures/block2.png"));
@@ -108,7 +108,7 @@ int main(int argc, char* argv[])
 
 	//below is all model stuff
 	buffermanager buffer = buffermanager(INTERNAL_WIDTH,INTERNAL_HEIGHT);
-	plane plan = plane(glm::vec3(0.0f,0.0f,-3.0f),glm::vec3(100.0f,100.0f,1.0f),glm::vec3((-85.0f), 0.0f, 0.0f));
+	plane plan = plane(glm::vec3(0.0f,0.0f,-3.0f),glm::vec3(100.0f,100.0f,1.0f),glm::vec3((-100.0f), 0.0f, 0.0f));
 	skybox backdrop = skybox();
 	cube cub = cube(glm::vec3(3.0f,0.0f,-2.0f),glm::vec3(0.0f,0.0f,0.0f),
 	glm::vec3(1.0f,1.0f,1.0f),glm::vec3((-85.0f), 45.0f, 0.0f));
@@ -130,7 +130,8 @@ int main(int argc, char* argv[])
 
 	spriteRenderer renderer = spriteRenderer();
 	pixfont font = pixfont("8x8font");
-	bg backg = bg("beachgrid",false);
+	graphics::generatebgs();
+	graphics::generatefonts();
 	
 	SDL_Event event;	 // used to store any events from the OS
 	float fade = 0.0f;
@@ -138,6 +139,7 @@ int main(int argc, char* argv[])
 	Uint64 NOW = SDL_GetPerformanceCounter();
 	Uint64 LAST = 0;
 	double deltaTime = 0;
+	int bgindex = 0;
 
 	while (running)
 	{
@@ -153,10 +155,14 @@ int main(int argc, char* argv[])
 				switch (event.key.keysym.sym)
 				{
 					case SDLK_w:
-						glPolygonMode( GL_FRONT_AND_BACK, GL_LINE );
+						bgindex--;
+						Mix_HaltMusic();
+						Mix_PlayMusic(graphics::backgrounds[bgindex]->music,100);
 						break;
 					case SDLK_s:
-						glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
+						bgindex++;
+						Mix_HaltMusic();
+						Mix_PlayMusic(graphics::backgrounds[bgindex]->music,100);
 						break;
 					case SDLK_a:
 						fade++;
@@ -180,7 +186,7 @@ int main(int argc, char* argv[])
 
 		deltaTime = (double)((NOW - LAST)*1000 / (double)SDL_GetPerformanceFrequency() );
 
-		posX+=deltaTime/0.0005;
+		posX+=deltaTime*0.0001;
 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		buffer.enable();
@@ -188,14 +194,15 @@ int main(int argc, char* argv[])
 		projection = glm::perspective(glm::radians(45.0f), (float)INTERNAL_WIDTH / (float)INTERNAL_HEIGHT, 0.001f, 10000.0f);
 		glm::mat4 view = glm::mat4(1.0f); //view is the **Camera**'s perspective
 		view = glm::translate(view, glm::vec3(0.0, 0, -6.0)); 
+		graphics::backgrounds[bgindex]->logic(deltaTime);
+		graphics::backgrounds[bgindex]->render(graphics::shaders[2]);
 
 		//backdrop.render(utils::shaders[2],utils::textures[3]);
-		// utils::shaders[1].activate();
-		// utils::shaders[1].setFloat("fade",fade);
-		// plan.position[0] = fmod(posX,0.5f);
-		//plan.render(utils::shaders[0],utils::textures[1],projection,view);
-		backg.logic(deltaTime);
-		backg.render(graphics::shaders[2]);
+		 plan.position[1] = fmod(posX,0.5f);
+		plan.render(graphics::shaders[0],graphics::textures[1],projection,view);
+
+		graphics::shaders[1]->activate();
+		graphics::shaders[1]->setFloat("fade",fade);
 
 		cub.rotation[0] = ((float)SDL_GetTicks()/10 * glm::radians(50.0f))/2;
 		cub.rotation[1] = (float)SDL_GetTicks()/10 * glm::radians(50.0f);
