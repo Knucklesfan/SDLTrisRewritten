@@ -11,8 +11,14 @@ public:
 	unsigned int id;
 	int w;
 	int h;
+    bool fliph,flipv,color;
+    std::string path;
+    std::string name;
+    std::string type;
 	texture() {}
 	texture(std::string path);
+    texture(std::string path,bool type, bool fliph, bool flipv);
+    ~texture();
 	void activate(int);
 };
 

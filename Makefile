@@ -2,7 +2,7 @@ OBJS	= main.o shader.o stbi_image.o texture.o utils.o skybox.o plane.o cube.o sp
 HEADER	= 
 OUT	= SDLTetris
 CC	 = g++
-FLAGS	 = -g -c -Wall -Iinclude/
+FLAGS	 = -g -c -Wall -Iinclude/ -DCLIENT
 LFLAGS	 = -lSDL2 -lSDL2_mixer -lGLEW -lGL -fsanitize=address
 
 all: $(OBJS)

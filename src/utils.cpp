@@ -1,6 +1,7 @@
 #include "utils.h"
-#include "pixfont.h"
-#include <SDL2/SDL.h>
+#include "rapidxml_utils.hpp"
+
+//#include "pixfont.h"
 #ifdef __SWITCH__
 #define filepath "/"
 #include <switch.h>
@@ -10,8 +11,10 @@
 #endif
 std::vector<texture *> graphics::textures = std::vector<texture *>();
 std::vector<shader *> graphics::shaders = std::vector<shader *>();
+#ifdef CLIENT
 std::vector<bg *> graphics::backgrounds = std::vector<bg *>();
-std::vector<Font *> graphics::fonts = std::vector<Font *>();
+#endif
+//std::vector<Font *> graphics::fonts = std::vector<Font *>();
 
 std::map<std::string, actiontype> bgconverters::actionmap =
     {
@@ -60,28 +63,6 @@ int utils::unsign(int a)
     }
     return a;
 }
-int utils::keyboardCheck(int keycode)
-{
-    const Uint8 *keys = SDL_GetKeyboardState(NULL);
-    return keys[keycode];
-}
-int utils::getMouseX()
-{
-    int x, y;
-    SDL_GetMouseState(&x, &y);
-    return x;
-}
-int utils::getMouseY()
-{
-    int x, y;
-    SDL_GetMouseState(&x, &y);
-    return y;
-}
-int utils::mouseCheck(int keycode)
-{
-    Uint32 buttons = SDL_GetMouseState(NULL, NULL);
-    return (buttons & keycode) != 0;
-}
 
 bool checkNode(rapidxml::xml_node<char> *node)
 {
@@ -91,10 +72,10 @@ bool checkNode(rapidxml::xml_node<char> *node)
     }
     return node != nullptr;
 }
-
+#ifdef CLIENT
 int graphics::generatebgs()
 {
-    rapidxml::file<> bgFile((filepath "backgrounds/backgrounds.xml"));
+    rapidxml::file<> bgFile((filepath"backgrounds/backgrounds.xml"));
     rapidxml::xml_document<> bgDoc;
     bgDoc.parse<0>(bgFile.data());
     rapidxml::xml_node<char> *parent = bgDoc.first_node("backgrounds");
@@ -111,19 +92,5 @@ int graphics::generatebgs()
     }
     return 0;
 }
-int graphics::generatefonts()
-{
-    rapidxml::file<> bgFile((filepath "fonts/fonts.xml"));
-    rapidxml::xml_document<> bgDoc;
-    bgDoc.parse<0>(bgFile.data());
-    rapidxml::xml_node<char> *parent = bgDoc.first_node("fonts");
-    for (rapidxml::xml_node<char> *child = parent->first_node(); child != NULL; child = child->next_sibling())
-    {
 
-        std::cout << "loading font " << child->value() << "\n";
-        // std::cout << "HELP ME:" << p.path().filename() << "\n";
-        pixfont* f = new pixfont(child->first_node("path")->value());
-        fonts.push_back(f);
-    }
-    return 0;
-}
+#endif

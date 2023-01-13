@@ -2,16 +2,25 @@
 
 //Not truly a skybox, because that wouldn't really be needed for this project, but rather a sky image!
 //Skyboxes could be implemented here, though....
-#include "shader.h"
-#include "texture.h"
+#ifdef CLIENT
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
+#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_opengl.h> // otherwise we want to use OpenGL
+#else
+#endif
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <SDL2/SDL_opengl.h>
+#include "shader.h"
+#include "texture.h"
 
-class cube {
+#ifdef CLIENT
+class cube
+#else
+class cube
+#endif
+{
     public:
         cube(glm::vec3 prepos,glm::vec3 postpos, glm::vec3 scale, glm::vec3 rotation);
         void render(shader* shad, texture* t, glm::mat4 projection, glm::mat4 view);
@@ -19,9 +28,9 @@ class cube {
         glm::vec3 postposition;
         glm::vec3 scale;
         glm::vec3 rotation;
-    private:
-        glm::mat4 transform;
         unsigned int VBO, VAO, EBO;
+
+    private:
         float vertices[180] = {
             -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
             0.5f, -0.5f, -0.5f,  1.0f, 0.0f,

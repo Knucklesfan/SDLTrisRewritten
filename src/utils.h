@@ -2,6 +2,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include <GL/glew.h>
+#include <GL/gl.h>
 #include <string>
 #include <fstream>
 #include <iostream>
@@ -9,12 +11,20 @@
 #include <vector>
 #include "shader.h"
 #include "texture.h"
+#ifdef CLIENT
 #include "background.h"
-#include "font.h"
+#endif
 #include <map>
 #include <rapidxml.hpp>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include "object.h"
+
 #define INTERNAL_WIDTH 640
 #define INTERNAL_HEIGHT 480
+#define COORDINATE_WIDTH INTERNAL_WIDTH
+#define COORDINATE_HEIGHT INTERNAL_HEIGHT
 
 namespace utils {
     std::string loadFile(std::string filename);
@@ -26,10 +36,6 @@ namespace utils {
     int sign(int);
     int unsign(int);
     float mean(float arr[], int from, int to);        
-    int getMouseX();
-    int getMouseY();
-    int mouseCheck(int);
-    int keyboardCheck(int);
     bool checkNode(rapidxml::xml_node<char>* node);
 
 }
@@ -37,14 +43,19 @@ class graphics {
     public:
         static std::vector<shader*> shaders;
         static std::vector<texture*> textures;
+#ifdef CLIENT
         static std::vector<bg*> backgrounds;
-        static std::vector<Font*> fonts;
-
+#endif
+        //static std::vector<Font*> fonts;
         static int generateshaders();
         static int generatetextures();
-        static int generatefonts();
+        //static int generatefonts();
+#ifdef CLIENT
         static int generatebgs();
+#endif
 };
+
+
 enum actiontype {
     MOVE,
     SCALE,

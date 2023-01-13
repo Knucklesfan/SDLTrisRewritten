@@ -1,6 +1,5 @@
 #pragma once
 
-#include <SDL2/SDL.h>
 #include <string>
 #include <iostream>
 #include <vector>
@@ -8,12 +7,21 @@
 #include <algorithm>    // std::sort
 #include <cstring>
 #include <map>
-#include <SDL2/SDL_mixer.h>
+#ifdef CLIENT
+#include <SDL2/SDL.h>
 #include <GL/glew.h>
+#include <SDL2/SDL_mixer.h>
+#include <SDL2/SDL_opengl.h> // otherwise we want to use OpenGL
+#else
+#include <QOpenGLWidget>
+#include <QOpenGLFunctions>
+#include <QOpenGLVertexArrayObject>
+#include <QOpenGLBuffer>
+#include <QMatrix4x4>
+#endif
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
-#include <SDL2/SDL_opengl.h>
 #include "texture.h"
 #include "shader.h"
 class layer { 
@@ -83,7 +91,9 @@ class bg
         std::string path;
         std::string creator;
         std::string vers;
+#ifdef CLIENT
         Mix_Music* music;
+#endif
         std::string songname;
         std::string artist;
         void render(shader* shad);

@@ -9,7 +9,7 @@
 #include <algorithm>    // std::sort
 #include <cstring>
 #include <cmath>
-#include <SDL2/SDL_mixer.h>
+
 #ifdef __SWITCH__
 #define pth  "/"
 #include <switch.h>
@@ -87,8 +87,8 @@ void legacylayer::logic(double deltatime) { //this is copied exactly how SDLTris
 }
 void legacylayer::render() {
     glDepthMask(GL_FALSE);
-	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(INTERNAL_WIDTH), 
-    static_cast<float>(INTERNAL_HEIGHT), 0.0f, -1.0f, 1.0f);
+	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(COORDINATE_WIDTH), 
+    static_cast<float>(COORDINATE_HEIGHT), 0.0f, -1.0f, 1.0f);
 	glm::vec2 texOffset = glm::vec2(0,0);
 	glm::vec2 texScale = glm::vec2(3,3);
 
@@ -163,10 +163,12 @@ bg::bg(std::string path, bool folder) {
                         }
                         case headerdata::FILENAME: {
                             std::string musicpath = pth "backgrounds/" + path + "/" + muskid->value();
+#ifdef CLIENT
                             music = Mix_LoadMUS(musicpath.c_str());
                             if (!music) {
                                 printf("Failed to load music at %s: %s\n", musicpath.c_str(), SDL_GetError());
                             }
+#endif
                             break;
                         }
                         default: {

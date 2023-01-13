@@ -1,99 +1,122 @@
 #include "shader.h"
 #include "utils.h"
+#ifdef CLIENT
 #include <SDL2/SDL.h>
 #include <GL/glew.h>
 #include <SDL2/SDL_opengl.h> // otherwise we want to use OpenGL
+#else
+#include <GL/glew.h>
+#include <GL/gl.h>
+#endif
 #include <stdio.h>
 #include <string>
-
-shader::shader(std::string vertPath, std::string fragpath)
+shader::shader(std::string vertPath, std::string fragpath) //TODO: fix weird spelling thing (im lazy so this is a TODO)
 {
-    int success; //debug stuff
+
+    int suc; //debug stuff
     char infoLog[512];
 
     //compile shaders
     std::string vertStr = utils::loadFile(vertPath);
     const char* vertex = vertStr.c_str();
     //std::cout << vertStr << "\n";
-    id = glCreateProgram();
+    id = __glewCreateProgram();
 
-    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShader, 1, &vertex, NULL);
-    glCompileShader(vertexShader);
+    GLuint vertexShader = __glewCreateShader(GL_VERTEX_SHADER);
+    __glewShaderSource(vertexShader, 1, &vertex, NULL);
+    __glewCompileShader(vertexShader);
 
-    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-    if (!success)
+    __glewGetShaderiv(vertexShader, GL_COMPILE_STATUS, &suc);
+    if (!suc)
     {
-        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+        __glewGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+        error += "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" + std::string(infoLog) + "\n";
+        success = false;
+
     }
     //fragment
     std::string fragStr = utils::loadFile(fragpath);
     const char* fragment = fragStr.c_str();
     //std::cout << fragment << "\n";
-    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShader, 1, &fragment, NULL);
-    glCompileShader(fragmentShader);
+    GLuint fragmentShader = __glewCreateShader(GL_FRAGMENT_SHADER);
+    __glewShaderSource(fragmentShader, 1, &fragment, NULL);
+    __glewCompileShader(fragmentShader);
 
-    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-    if (!success)
+    __glewGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &suc);
+    if (!suc)
     {
-        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+        __glewGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+        error += "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" + std::string(infoLog) + "\n";
+        suc = false;
+
     }
 
     //make shader program
-    glAttachShader(id, vertexShader);
-    glAttachShader(id, fragmentShader);
-    glLinkProgram(id); // you can absolutely set this up to auto-configure from an xml file
-    glGetProgramiv(id, GL_LINK_STATUS, &success);
-    if (!success) {
-        glGetProgramInfoLog(id, 512, NULL, infoLog);
-        std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+    __glewAttachShader(id, vertexShader);
+    __glewAttachShader(id, fragmentShader);
+    __glewLinkProgram(id); // you can absolutely set this up to auto-configure from an xml file
+    __glewGetProgramiv(id, GL_LINK_STATUS, &suc);
+    if (!suc) {
+        __glewGetProgramInfoLog(id, 512, NULL, infoLog);
+        error += "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" + std::string(infoLog) + "\n";
+        success = false;
     }
-    glDeleteShader(vertexShader);
-    glDeleteShader(fragmentShader);
-
+    std::cout << error << "\n";
+    __glewDeleteShader(vertexShader);
+    __glewDeleteShader(fragmentShader);
+    vert = vertPath;
+    frag = fragpath;
 }
 
 void shader::activate()
 {
-    glUseProgram(id);
+    __glewUseProgram(id);
 }
 
 void shader::setBool(const std::string& name, bool value) const
 {
-    int location = glGetUniformLocation(id, name.c_str());
-    glUniform1i(location, (int)value);
+    int location = __glewGetUniformLocation(id, name.c_str());
+    __glewUniform1i(location, (int)value);
 
 }
 
 void shader::setInt(const std::string& name, int value) const
 {
-    int location = glGetUniformLocation(id, name.c_str());
-    glUniform1i(location, value);
+    int location = __glewGetUniformLocation(id, name.c_str());
+    __glewUniform1i(location, value);
 
 }
 
 void shader::setFloat(const std::string& name, float value) const
 {
-    int location = glGetUniformLocation(id, name.c_str());
-    glUniform1f(location, value);
+    int location = __glewGetUniformLocation(id, name.c_str());
+    __glewUniform1f(location, value);
 
 }
 
 void shader::setVector(const std::string& name, float* value) const {
-    int location = glGetUniformLocation(id, name.c_str());
-    glUniformMatrix4fv(location,1, GL_FALSE, value);
+    int location = __glewGetUniformLocation(id, name.c_str());
+    __glewUniformMatrix4fv(location,1, GL_FALSE, value);
 
 }
 void shader::setVec2(const std::string& name, float* value) const {
-    int location = glGetUniformLocation(id, name.c_str());
-    glUniform2fv(location,1, value);
+    int location = __glewGetUniformLocation(id, name.c_str());
+    __glewUniform2fv(location,1, value);
 
 }
+void shader::setVec3(const std::string& name, float* value) const {
+    int location = __glewGetUniformLocation(id, name.c_str());
+    __glewUniform3fv(location,1, value);
+
+}
+
 void shader::setVec4(const std::string& name, float* value) const {
-    int location = glGetUniformLocation(id, name.c_str());
-    glUniform4fv(location,1, value);
+    int location = __glewGetUniformLocation(id, name.c_str());
+    __glewUniform4fv(location,1, value);
+
+}
+void shader::setMat3(const std::string& name, float* value) const {
+    int location = __glewGetUniformLocation(id, name.c_str());
+    __glewUniformMatrix3fv(location,1,GL_FALSE, value);
 
 }

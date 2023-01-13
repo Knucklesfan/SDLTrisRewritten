@@ -37,8 +37,8 @@ float rotate, glm::vec2 texcoord, glm::vec2 texsize) {
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 */
     // prepare transformations
-	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(INTERNAL_WIDTH), 
-    static_cast<float>(INTERNAL_HEIGHT), 0.0f, -1.0f, 1.0f);
+	glm::mat4 projection = glm::ortho(0.0f, static_cast<float>(COORDINATE_WIDTH), 
+    static_cast<float>(COORDINATE_HEIGHT), 0.0f, -1.0f, 1.0f);
 	glm::vec2 texOffset = glm::vec2(texcoord[0]/t->w,texcoord[1]/t->h);
 	glm::vec2 texScale = glm::vec2(texsize[0]/t->w,texsize[1]/t->h);
 

@@ -131,7 +131,7 @@ int main(int argc, char* argv[])
 	spriteRenderer renderer = spriteRenderer();
 	pixfont font = pixfont("8x8font");
 	graphics::generatebgs();
-	graphics::generatefonts();
+	//graphics::generatefonts();
 	
 	SDL_Event event;	 // used to store any events from the OS
 	float fade = 0.0f;
