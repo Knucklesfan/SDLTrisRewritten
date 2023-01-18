@@ -99,9 +99,10 @@ void GLWidget::initializeGL()
                     glm::vec3(0.5f,0.5f,0.5f),glm::vec3((0.0f), 45.0f, 0.0f));
     petah = new model("/home/knucklesfan/KnuxfanBGSDK/models/peetah/peetah.obj",glm::vec3(2.0f,1.0f,-1.0f),
                     glm::vec3(1.0f,0.5f,1.0f),glm::vec3((0.0f), 45.0f, 0.0f));
-    cam = new previewCamera(glm::vec3(0,2,0),glm::vec3(0,0,0),45,nullptr,640,480,0.00001f,100000.0f,0.05f);
+    cam = new previewCamera(glm::vec3(0,2,0),glm::vec3(0,0,0),45,nullptr,640,480,0.00001f,100000.0f,0.2f);
     //i hate qt SO MUCH. I HATE IT SO MUCH I HATE IT SO MUCH ASDKLFJASDLKFJ;ASLKDJFA;KSLDJFA;S
     elements.push_back(new Light(LIGHTTYPE::DIRECTIONAL,glm::vec3(0.0f,45.0f,0.0f)));
+    previous = QPoint(width()/2,height()/2);
 }
 
 void GLWidget::setupVertexAttribs()
@@ -119,11 +120,13 @@ void GLWidget::paintGL()
     rotate+=15;
 
     QPoint mouse = mapFromGlobal(QCursor::pos());
+
     if(move) {
         std::cout << "rotation" << mouse.x() << " " << mouse.y() <<"\n";
-        cam->rotate(width()/2-(float)((int)mouse.x()),height()/2-(float)((int)mouse.y()));
-        QCursor::setPos(mapToGlobal(QPoint(width()/2,height()/2)));
+        cam->rotate(mouse.x()-previous.x(),mouse.y()-previous.y());
+        //QCursor::setPos(mapToGlobal(QPoint(width()/2,height()/2))); wayland is dumb and smells bad
     }
+    previous = mouse;
 
 //    glm::mat4 projection;
 //    projection = glm::perspective(glm::radians(45.0f), (float)INTERNAL_WIDTH / (float)INTERNAL_HEIGHT, 0.001f, 10000.0f);
@@ -200,14 +203,12 @@ void GLWidget::mousePressEvent(QMouseEvent *event)
     if(event->buttons()== Qt::RightButton) {
         move = true;
     }
-    else {
-        move = false;
-    }
 }
 
-void GLWidget::mouseMoveEvent(QMouseEvent *event)
-{
+void GLWidget::mouseReleaseEvent(QMouseEvent *event) {
+    move = false;
 }
+
 
 void GLWidget::keyPressEvent(QKeyEvent *event) {
     keys[event->key()] = true;
