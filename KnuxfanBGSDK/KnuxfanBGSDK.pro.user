@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 9.0.1, 2023-01-02T15:05:41. -->
+<!-- Written by QtCreator 9.0.1, 2023-01-16T23:07:58. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -239,14 +239,14 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/home/knucklesfan/KnuxfanBGSDK/KnuxfanBGSDK.pro</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/home/knucklesfan/KnuxfanBGSDK/KnuxfanBGSDK.pro</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">KnuxfanBGSDK2</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qt4ProjectManager.Qt4RunConfiguration:/home/knucklesfan/Documents/GitHub/SDLTrisRewritten/KnuxfanBGSDK/KnuxfanBGSDK.pro</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">/home/knucklesfan/Documents/GitHub/SDLTrisRewritten/KnuxfanBGSDK/KnuxfanBGSDK.pro</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseLibrarySearchPath">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory">/home/knucklesfan/KnuxfanBGSDK</value>
     <value type="QString" key="RunConfiguration.WorkingDirectory.default">/home/knucklesfan/build-KnuxfanBGSDK-Desktop-Debug</value>
    </valuemap>
    <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">1</value>

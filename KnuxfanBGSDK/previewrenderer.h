@@ -6,6 +6,7 @@
 
 
 #include <QOpenGLWidget>
+#include "previewcamera.h"
 #include "qwidget.h"
 #include <QMouseEvent>
 #include <QCoreApplication>
@@ -45,6 +46,8 @@ protected:
     void resizeGL(int width, int height) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent *event) override;
+    void keyPressEvent(QKeyEvent *event) override;
+    void keyReleaseEvent(QKeyEvent *event) override;
 
 private:
     void setupVertexAttribs();
@@ -57,6 +60,11 @@ private:
     model* petah;
     QTimer timer;
     static bool m_transparent;
+
+    //all of this is used for debugging mostly only.
+    QMap<int, bool> keys;
+    previewCamera* cam;
+    bool move; //Is the user moving the debug camera?
 };
 
 #endif

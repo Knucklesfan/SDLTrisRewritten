@@ -1,9 +1,9 @@
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR BSD-3-Clause
 
-#include "/home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/utils.h"
-#include "/home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/cube.h"
-#include "/home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/skybox.h"
+#include "../src/utils.h"
+#include "../src/cube.h"
+#include "../src/skybox.h"
 
 #include <glm/glm.hpp>
 #include <time.h>

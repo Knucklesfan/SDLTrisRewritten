@@ -12,41 +12,42 @@ LIBS += -lGLEW -lassimp
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
-    ../Documents/GitHub/SDLTrisRewritten/src/light.cpp \
+    ../src/light.cpp \
     TexturePreview.cpp \
     editorutils.cpp \
     main.cpp \
     mainwindow.cpp \
+    previewcamera.cpp \
     previewrenderer.cpp \
-    /home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/texture.cpp \
-    /home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/shader.cpp \
-    /home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/utils.cpp \
-    /home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/cube.cpp \
-    /home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/skybox.cpp \
-    /home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/mesh.cpp \
-    /home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/stbi_image.c \
+    ../src/texture.cpp \
+    ../src/shader.cpp \
+    ../src/utils.cpp \
+    ../src/cube.cpp \
+    ../src/skybox.cpp \
+    ../src/mesh.cpp \
+    ../src/stbi_image.c \
     wizard.cpp
 
 
 
 HEADERS += \
-    ../Documents/GitHub/SDLTrisRewritten/src/camera.h \
-    ../Documents/GitHub/SDLTrisRewritten/src/object.h \
+    ../src/object.h \
     editorutils.h \
     mainwindow.h \
+    previewcamera.h \
     previewrenderer.h \
-    /home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/texture.h \
-    /home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/shader.h \
-    /home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/utils.h \
-    /home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/cube.h \
-    /home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/skybox.h \
-    /home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/mesh.h \
-    /home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/stb_image.h \
+    ../src/texture.h \
+    ../src/shader.h \
+    ../src/utils.h \
+    ../src/cube.h \
+    ../src/skybox.h \
+    ../src/mesh.h \
+    ../src/stb_image.h \
     texturepreview.h \
     wizard.h
 
 INCLUDEPATH += \
-    /home/knucklesfan/Documents/GitHub/SDLTrisRewritten/include/
+    ../include/
 
 FORMS += \
     mainwindow.ui

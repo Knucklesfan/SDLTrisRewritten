@@ -2,8 +2,8 @@
 #define EDITORUTILS_H
 
 #include <vector>
-#include "/home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/texture.h"
-#include "/home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/shader.h"
+#include "../src/texture.h"
+#include "../src/shader.h"
 
 class editorutils
 {

@@ -1,9 +1,9 @@
 // Copyright (C) 2016 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR BSD-3-Clause
 
-#include "/home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/utils.h"
-#include "/home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/cube.h"
-#include "/home/knucklesfan/Documents/GitHub/SDLTrisRewritten/src/mesh.h"
+#include "../src/utils.h"
+#include "../src/cube.h"
+#include "../src/mesh.h"
 #include <glm/glm.hpp>
 #include <time.h>
 #include <QTimer>
@@ -99,7 +99,7 @@ void GLWidget::initializeGL()
                     glm::vec3(0.5f,0.5f,0.5f),glm::vec3((0.0f), 45.0f, 0.0f));
     petah = new model("/home/knucklesfan/KnuxfanBGSDK/models/peetah/peetah.obj",glm::vec3(2.0f,1.0f,-1.0f),
                     glm::vec3(1.0f,0.5f,1.0f),glm::vec3((0.0f), 45.0f, 0.0f));
-
+    cam = new previewCamera(glm::vec3(0,2,0),glm::vec3(0,0,0),45,nullptr,640,480,0.00001f,100000.0f,0.05f);
     //i hate qt SO MUCH. I HATE IT SO MUCH I HATE IT SO MUCH ASDKLFJASDLKFJ;ASLKDJFA;KSLDJFA;S
     elements.push_back(new Light(LIGHTTYPE::DIRECTIONAL,glm::vec3(0.0f,45.0f,0.0f)));
 }
@@ -111,20 +111,29 @@ void GLWidget::setupVertexAttribs()
 
 void GLWidget::paintGL()
 {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     color++;
     glm::vec3 lightPos = glm::vec3(((float)cos(((float)rotate/1000 * glm::radians(50.0f))/2)*2) * 10,2.0f,((float)sin(((float)rotate/1000 * glm::radians(50.0f))/2)*2) * 10);
 
     rotate+=15;
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    glm::mat4 projection;
-    projection = glm::perspective(glm::radians(45.0f), (float)INTERNAL_WIDTH / (float)INTERNAL_HEIGHT, 0.001f, 10000.0f);
-    glm::mat4 view = glm::mat4(1.0f); //the actual transform of the model itself
-    view = glm::rotate(view, glm::radians(camerarot[0]), glm::vec3(1.0f, 0.0f, 0.0f));
-    view = glm::rotate(view, glm::radians(camerarot[1]), glm::vec3(0.0f, 1.0f, 0.0f));
-    view = glm::rotate(view, glm::radians(camerarot[2]), glm::vec3(0.0f, 0.0f, 1.0f));
-    //view = glm::rotate(view, glm::radians(-45.0f),glm::vec3(1.0f,0.0f,1.0f));
 
-    view = glm::translate(view,camerapos);
+    QPoint mouse = mapFromGlobal(QCursor::pos());
+    if(move) {
+        std::cout << "rotation" << mouse.x() << " " << mouse.y() <<"\n";
+        cam->rotate(width()/2-(float)((int)mouse.x()),height()/2-(float)((int)mouse.y()));
+        QCursor::setPos(mapToGlobal(QPoint(width()/2,height()/2)));
+    }
+
+//    glm::mat4 projection;
+//    projection = glm::perspective(glm::radians(45.0f), (float)INTERNAL_WIDTH / (float)INTERNAL_HEIGHT, 0.001f, 10000.0f);
+//    glm::mat4 view = glm::mat4(1.0f); //the actual transform of the model itself
+//    view = glm::rotate(view, glm::radians(camerarot[0]), glm::vec3(1.0f, 0.0f, 0.0f));
+//    view = glm::rotate(view, glm::radians(camerarot[1]), glm::vec3(0.0f, 1.0f, 0.0f));
+//    view = glm::rotate(view, glm::radians(camerarot[2]), glm::vec3(0.0f, 0.0f, 1.0f));
+//    //view = glm::rotate(view, glm::radians(-45.0f),glm::vec3(1.0f,0.0f,1.0f));
+
+//    view = glm::translate(view,camerapos);
 
     //cub->rotation[0] = ((float)rotate/10 * glm::radians(50.0f))/2;
     //cub->rotation[1] = ((float)rotate/10 * glm::radians(50.0f));
@@ -133,24 +142,24 @@ void GLWidget::paintGL()
     heavy->rotation[1] = -((float)rotate/10 * glm::radians(50.0f));
     petah->position.x = 2*cos((float)rotate/1000)+2.0;
     petah->position.z = 2*sin((float)rotate/2000)+1.0;
-    petah->render(shad,projection,view);
+    petah->render(shad,cam->projection,cam->view());
     petah->position.x = 3*cos((float)rotate/3000)+2.0;
     petah->position.z = 3*sin((float)rotate/1000)+1.0;
-    petah->render(shad,projection,view);
+    petah->render(shad,cam->projection,cam->view());
     petah->position.x = 4*cos((float)rotate/5000)+2.0;
     petah->position.z = 4*sin((float)rotate/1000)+1.0;
-    petah->render(shad,projection,view);
+    petah->render(shad,cam->projection,cam->view());
 
     heavy->position.x = 2*sin((float)rotate/1000)+2.0;
         heavy->position.y = 0.5*sin((float)rotate/200)+2.0;
     heavy->position.z = 2*cos((float)rotate/1000)-1.0;
 
     for(int i = 0; i < elements.size(); i++) {
-        elements.at(i)->render(litshad,view,projection,i);
+        elements.at(i)->render(litshad,cam->projection,cam->view(),i);
     }
     litshad->setVec3("viewPos",glm::value_ptr(camerapos));
-    mod->render(litshad,projection,view);
-    heavy->render(shad,projection,view);
+    mod->render(shad,cam->projection,cam->view());
+    heavy->render(shad,cam->projection,cam->view());
 
     //    mod->rotation[0] = -((float)rotate/50 * glm::radians(50.0f))/2;
 //    mod->rotation[1] = -((float)rotate/50 * glm::radians(50.0f));
@@ -167,7 +176,6 @@ void GLWidget::paintGL()
 //    mod->rotation[1] = -((float)rotate/200 * glm::radians(50.0f));
 //    mod->postposition = glm::vec3(4.0f,0.0f,0.0f);
 //    mod->render(shad,projection,view);
-
     auto currentTime = std::chrono::steady_clock::now();
 
     const auto elapsedTime = std::chrono::duration_cast<std::chrono::nanoseconds>(currentTime - lastTime).count();
@@ -189,8 +197,22 @@ void GLWidget::resizeGL(int w, int h)
 
 void GLWidget::mousePressEvent(QMouseEvent *event)
 {
+    if(event->buttons()== Qt::RightButton) {
+        move = true;
+    }
+    else {
+        move = false;
+    }
 }
 
 void GLWidget::mouseMoveEvent(QMouseEvent *event)
 {
 }
+
+void GLWidget::keyPressEvent(QKeyEvent *event) {
+    keys[event->key()] = true;
+}
+void GLWidget::keyReleaseEvent(QKeyEvent *event) {
+    keys[event->key()] = false;
+}
+
