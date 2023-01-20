@@ -77,17 +77,15 @@ void GLWidget::initializeGL()
 
     glLoadIdentity();
 
-    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    glClearDepth(1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glDepthFunc(GL_LESS);
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable(GL_CULL_FACE);
-    glCullFace(GL_FRONT);
-    glFrontFace(GL_CW);
+
+    glClearColor(0.2f, 0.5f, 1.0f, 1.0f);
+    glClearDepth(1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     shad = new shader("/home/knucklesfan/KnuxfanBGSDK/shaders/vertex_unlit.shader", "/home/knucklesfan/KnuxfanBGSDK/shaders/fragment_unlit.shader");
     litshad = new shader("/home/knucklesfan/KnuxfanBGSDK/shaders/vertex_lit.shader", "/home/knucklesfan/KnuxfanBGSDK/shaders/fragment_lit.shader");
@@ -98,8 +96,8 @@ void GLWidget::initializeGL()
     heavy = new model("/home/knucklesfan/KnuxfanBGSDK/models/hvyweapon/heavy.obj",glm::vec3(2.0f,1.0f,1.0f),
                     glm::vec3(0.5f,0.5f,0.5f),glm::vec3((0.0f), 45.0f, 0.0f));
     petah = new model("/home/knucklesfan/KnuxfanBGSDK/models/peetah/peetah.obj",glm::vec3(2.0f,1.0f,-1.0f),
-                    glm::vec3(1.0f,0.5f,1.0f),glm::vec3((0.0f), 45.0f, 0.0f));
-    cam = new previewCamera(glm::vec3(0,2,0),glm::vec3(0,0,0),45,nullptr,640,480,0.00001f,100000.0f,0.2f);
+                    glm::vec3(1.0f,1.0f,1.0f),glm::vec3((0.0f), 45.0f, 0.0f));
+    cam = new previewCamera(glm::vec3(0,2,0),glm::vec3(0,0,0),90,nullptr,640,480,0.00001f,100000.0f,0.2f);
     //i hate qt SO MUCH. I HATE IT SO MUCH I HATE IT SO MUCH ASDKLFJASDLKFJ;ASLKDJFA;KSLDJFA;S
     elements.push_back(new Light(LIGHTTYPE::DIRECTIONAL,glm::vec3(0.0f,45.0f,0.0f)));
     previous = QPoint(width()/2,height()/2);
@@ -112,6 +110,7 @@ void GLWidget::setupVertexAttribs()
 
 void GLWidget::paintGL()
 {
+    double deltatime = timer.remainingTime()/1000;
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     color++;
@@ -122,9 +121,16 @@ void GLWidget::paintGL()
     QPoint mouse = mapFromGlobal(QCursor::pos());
 
     if(move) {
-        std::cout << "rotation" << mouse.x() << " " << mouse.y() <<"\n";
+        grabKeyboard();
         cam->rotate(mouse.x()-previous.x(),mouse.y()-previous.y());
+        cam->move(keys,0.01);
+        cursor().setShape(Qt::CrossCursor);
         //QCursor::setPos(mapToGlobal(QPoint(width()/2,height()/2))); wayland is dumb and smells bad
+    }
+    else {
+        releaseKeyboard();
+        
+        cursor().setShape(Qt::ArrowCursor);
     }
     previous = mouse;
 
@@ -184,13 +190,11 @@ void GLWidget::paintGL()
     const auto elapsedTime = std::chrono::duration_cast<std::chrono::nanoseconds>(currentTime - lastTime).count();
     ++_fpsCount;
 
-    if (elapsedTime > 1000000000) {
-        lastTime = currentTime;
-        fps = _fpsCount;
-        _fpsCount = 0;
+    lastTime = currentTime;
+    fps = _fpsCount;
+    _fpsCount = 0;
 
-        std::cout << fps << "\n"; // print out fps in every second (or you can use it elsewhere)
-    }
+    //std::cout << fps << "\n"; // print out fps in every second (or you can use it elsewhere)
 }
 
 void GLWidget::resizeGL(int w, int h)
@@ -211,9 +215,12 @@ void GLWidget::mouseReleaseEvent(QMouseEvent *event) {
 
 
 void GLWidget::keyPressEvent(QKeyEvent *event) {
+    std::cout << event->key() << " PRESSED\n";
     keys[event->key()] = true;
 }
 void GLWidget::keyReleaseEvent(QKeyEvent *event) {
+    std::cout << event->key() << " RELEASED\n";
+
     keys[event->key()] = false;
 }
 

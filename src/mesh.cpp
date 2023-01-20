@@ -1,6 +1,7 @@
  
 #include "mesh.h"
 #ifdef CLIENT
+#include "utils.h"
 #else
 #include "editorutils.h"
 #endif
@@ -93,9 +94,9 @@ void mesh::render(shader* shad) {
     //glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
 }
 
-#ifdef CLIENT //start that silly GOOFY Q    U   I   R   K   Y client stuff
+//#ifdef CLIENT //start that silly GOOFY Q    U   I   R   K   Y client stuff
 //TODO: implement client model import handling of KMF file format importer
-#else
+//#else
 model::model(std::string path,glm::vec3 prepos, glm::vec3 scale, glm::vec3 rotation) {
     Assimp::Importer importer;
     const aiScene* scene = importer.ReadFile(path,aiProcess_Triangulate|aiProcess_OptimizeMeshes);
@@ -203,12 +204,12 @@ std::vector<texture*> model::loadtexture(aiMaterial *mat, aiTextureType type, st
         aiString str;
         mat->GetTexture(type, i, &str);
         bool skip = false;
-        for(unsigned int j = 0; j < editorutils::textures.size(); j++)
+        for(unsigned int j = 0; j < graphics::textures.size(); j++)
         {
-            if(std::strcmp(editorutils::textures[j]->path.c_str(), std::string(dir+"/"+str.C_Str()).c_str()) == 0)
+            if(std::strcmp(graphics::textures[j]->path.c_str(), std::string(dir+"/"+str.C_Str()).c_str()) == 0)
             {
-                std::cout << "pass " << editorutils::textures[j]->path.c_str() << "\n";
-                textures.push_back(editorutils::textures[j]);
+                std::cout << "pass " << graphics::textures[j]->path.c_str() << "\n";
+                textures.push_back(graphics::textures[j]);
                 skip = true;
                 break;
             }
@@ -218,9 +219,9 @@ std::vector<texture*> model::loadtexture(aiMaterial *mat, aiTextureType type, st
             texture* tex = new texture(std::string(dir+"/"+str.C_Str()));
             tex->type = typeName;
             textures.push_back(tex);
-            editorutils::textures.push_back(tex); // add to loaded textures
+            graphics::textures.push_back(tex); // add to loaded textures
         }
     }
     return textures;
 }
-#endif
+//#endif

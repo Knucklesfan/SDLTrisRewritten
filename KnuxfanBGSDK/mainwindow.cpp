@@ -1,3 +1,5 @@
+#include "../src/utils.h"
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "wizard.h"
@@ -28,7 +30,7 @@ void MainWindow::on_addtexture_clicked()
     if(dialogCode == QDialog::Accepted)
     {
         texture* t = new texture(dialog->filepath->text().toStdString(),dialog->pixelcombo->currentIndex(),dialog->flipH->checkState(),dialog->flipV->checkState());
-        editorutils::textures.push_back(t);
+        graphics::textures.push_back(t);
         updateTextureTable();
     }
     if(dialogCode == QDialog::Rejected){
@@ -46,26 +48,26 @@ void MainWindow::updateTextureTable() {
     ui->objecttexturepreviewcombo->clear();
     ui->objecttexturepreviewcombo->addItem("Use defined textures");
 
-    for(int i = 0; i < editorutils::textures.size();i++) {
+    for(int i = 0; i < graphics::textures.size();i++) {
         ui->texturetable->insertRow(ui->texturetable->rowCount());
         ui->texturetable->setItem(i, 0, new QTableWidgetItem(QString::number(i)));
-        ui->texturetable->setItem(i, 1, new QTableWidgetItem(QString(editorutils::textures[i]->name.c_str())));
+        ui->texturetable->setItem(i, 1, new QTableWidgetItem(QString(graphics::textures[i]->name.c_str())));
         ui->texturetable->setItem(i, 2, new QTableWidgetItem(
-                                      QString((editorutils::textures[i]->type).c_str())+ " " + QString((editorutils::textures[i]->flipv)?"V":"") + QString((editorutils::textures[i]->fliph)?"H":"") )
+                                      QString((graphics::textures[i]->type).c_str())+ " " + QString((graphics::textures[i]->flipv)?"V":"") + QString((graphics::textures[i]->fliph)?"H":"") )
                                   );
-        ui->texturetable->setItem(i, 3, new QTableWidgetItem(QString(editorutils::textures[i]->path.c_str())));
-        ui->texturecombo->addItem(QString(editorutils::textures[i]->name.c_str()));
-        ui->objecttexturepreviewcombo->addItem(QString(editorutils::textures[i]->name.c_str()));
+        ui->texturetable->setItem(i, 3, new QTableWidgetItem(QString(graphics::textures[i]->path.c_str())));
+        ui->texturecombo->addItem(QString(graphics::textures[i]->name.c_str()));
+        ui->objecttexturepreviewcombo->addItem(QString(graphics::textures[i]->name.c_str()));
 
     }
 }
 void MainWindow::updateShaderTable() {
     ui->shadertable->setRowCount(0);
-    for(int i = 0; i < editorutils::shaders.size();i++) {
+    for(int i = 0; i < graphics::shaders.size();i++) {
         ui->shadertable->insertRow(ui->texturetable->rowCount());
         ui->shadertable->setItem(i, 0, new QTableWidgetItem(QString::number(i)));
-        ui->shadertable->setItem(i, 1, new QTableWidgetItem(QString(editorutils::shaders[i]->vert.c_str())));
-        ui->shadertable->setItem(i, 2, new QTableWidgetItem(QString(editorutils::shaders[i]->frag.c_str())));
+        ui->shadertable->setItem(i, 1, new QTableWidgetItem(QString(graphics::shaders[i]->vert.c_str())));
+        ui->shadertable->setItem(i, 2, new QTableWidgetItem(QString(graphics::shaders[i]->frag.c_str())));
     }
 }
 
@@ -79,8 +81,8 @@ void MainWindow::on_texturetable_itemClicked(QTableWidgetItem *item)
 void MainWindow::on_deletetexture_clicked()
 {
     if(ui->texturetable->currentItem()) {
-        std::swap(editorutils::textures[ui->texturetable->currentItem()->row()], editorutils::textures.back());
-        editorutils::textures.pop_back();
+        std::swap(graphics::textures[ui->texturetable->currentItem()->row()], graphics::textures.back());
+        graphics::textures.pop_back();
     }
     updateTextureTable();
 }
@@ -103,7 +105,7 @@ void MainWindow::on_addshader_clicked()
     {
         shader* s = new shader(dialog->vertpath->text().toStdString(),dialog->fragpath->text().toStdString());
         if(s->success) {
-            editorutils::shaders.push_back(s);
+            graphics::shaders.push_back(s);
             updateShaderTable();
         }
         else {
@@ -130,8 +132,8 @@ void MainWindow::on_addshader_clicked()
 void MainWindow::on_removeshader_clicked()
 {
     if(ui->shadertable->currentItem()) {
-        std::swap(editorutils::shaders[ui->shadertable->currentItem()->row()], editorutils::shaders.back());
-        editorutils::shaders.pop_back();
+        std::swap(graphics::shaders[ui->shadertable->currentItem()->row()], graphics::shaders.back());
+        graphics::shaders.pop_back();
     }
     updateShaderTable();
 

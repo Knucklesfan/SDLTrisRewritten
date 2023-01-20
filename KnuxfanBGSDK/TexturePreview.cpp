@@ -93,11 +93,11 @@ void TexturePreview::setupVertexAttribs()
 
 void TexturePreview::paintGL()
 {
-    if(previewtexture < editorutils::textures.size()) {
+    if(previewtexture < graphics::textures.size()) {
         rotate+=2;
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        if(backgroundtexture < editorutils::textures.size()) {
-            box->render(skyshad,editorutils::textures[backgroundtexture]);
+        if(backgroundtexture < graphics::textures.size()) {
+            box->render(skyshad,graphics::textures[backgroundtexture]);
         }
         glm::mat4 projection;
         projection = glm::perspective(glm::radians(45.0f), (float)256 / (float)256, 0.001f, 10000.0f);
@@ -105,7 +105,7 @@ void TexturePreview::paintGL()
         view = glm::translate(view, glm::vec3(0.0, 0, -0.0));
         cub->rotation[0] = ((float)rotate/10 * glm::radians(50.0f))/2;
         cub->rotation[1] = ((float)rotate/10 * glm::radians(50.0f));
-        cub->render(shad,editorutils::textures[previewtexture],projection,view);
+        cub->render(shad,graphics::textures[previewtexture],projection,view);
     }
 }
 

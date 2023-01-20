@@ -8,8 +8,6 @@
 class editorutils
 {
 public:
-    static std::vector<texture*> textures;
-    static std::vector<shader*> shaders;
 
 };
 

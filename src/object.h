@@ -87,15 +87,13 @@ public:
         projection = glm::perspective(glm::radians((float)fov), (float)w / (float)h, near, far);
     };
     glm::mat4 projection;
+
     glm::mat4 view() { //gets the view for usage
         return glm::lookAt(position, position+front, up);
     };
     int width, height, fov; //all used for projection calculations
 
     //the following is shamelessly stolen from learnopengl.com, and i will be rewriting this (yknow, if i need to.)
-
-protected:
-    //updates the FPS vectors in case of movement.
     void updateView() {
         glm::vec3 tempfront;
         tempfront.x = cos(glm::radians(rotation.x)) * cos(glm::radians(rotation.y));
@@ -104,13 +102,14 @@ protected:
         front = glm::normalize(tempfront);
         // also re-calculate the Right and Up vector
         right = glm::normalize(glm::cross(front, up));  // normalize the vectors, because their length gets closer to 0 the more you look up or down which results in slower movement.
-        up    = glm::normalize(glm::cross(right, front));
+        //up    = glm::normalize(glm::cross(right, front));
         std::cout << rotation.x << " " << rotation.y << "\n";
 
     };
-    texture* render; //if nullptr, then it just doesnt render to a texture lmao
 
-private:
+protected:
+    //updates the FPS vectors in case of movement.
+    texture* render; //if nullptr, then it just doesnt render to a texture lmao
     //the following is only *truly* necessary if used in an FPS context (which I do want to create soon, hence the unused code for now)
     //in theory, you could implement a way to do this without these 3 vectors, but having them makes it easier soooo
     //BTW, highly encourage writing your own camera, lights etc and NOT using mine in some situations.

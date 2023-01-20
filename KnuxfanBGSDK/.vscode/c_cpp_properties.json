@@ -4,11 +4,14 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/include"
+                "${workspaceFolder}/../**",
+                "/usr/include/qt6/QtCore",
+                "/usr/include/qt",
+                "/usr/include/qt/QtWidgets",
+                "/usr/include/qt/QtGui",
+                "/usr/include/qt6/**"
             ],
-            "defines": [
-                "CLIENT"
-            ],
+            "defines": [],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c17",
             "cppStandard": "c++14",
